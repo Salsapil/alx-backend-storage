@@ -45,7 +45,7 @@ from typing import Union, Optional, Callable, Any
 
 class Cache:
     """Cache class"""
-    def __init__(self):
+    def __init__(self) -> None:
         """new object"""
         self._radis = redis.Redis()
         self._radis.flushdb()
