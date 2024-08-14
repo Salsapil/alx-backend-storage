@@ -2,7 +2,7 @@
 """Radis Module"""
 
 import redis
-import uuid
+from uuid import uuid4
 from functools import wraps
 from typing import Union, Optional, Callable, Any
 
@@ -61,7 +61,7 @@ class Cache:
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """store method"""
-        key = str(uuid.uuid4())
+        key = str(uuid4())
         self._radis.set(key, data)
         return key
 
