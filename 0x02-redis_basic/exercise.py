@@ -2,7 +2,7 @@
 """Radis Module"""
 
 import redis
-from uuid import uuid4
+import uuid
 from functools import wraps
 from typing import Union, Optional, Callable, Any
 
@@ -11,6 +11,7 @@ def count_calls(method: Callable) -> Callable:
     """Decorator that counts how many times a method is called."""
     @wraps(method)
     def wrapper(self: Any, *args, **kwargs) -> str:
+        """warps called method"""
         key = method.__qualname__
         self._redis.incr(key)
         return method(self, *args, **kwargs)
@@ -20,20 +21,12 @@ def count_calls(method: Callable) -> Callable:
 def call_history(method: Callable) -> Callable:
     """Decorator that stores input and output history of a method."""
     @wraps(method)
-    def wrapper(self, *args, **kwargs):
-        # Define the input and output keys for Redis
-        input_key = f"{method.__qualname__}:inputs"
-        output_key = f"{method.__qualname__}:outputs"
-
-        # Normalize input arguments to strings and store in Redis
-        self._redis.rpush(input_key, str(args))
-
-        # Call the original method
-        result = method(self, *args, **kwargs)
-
-        # Store the result in Redis
-        self._redis.rpush(output_key, result)
-        return result
+    def wrapper(self, *args):
+        """warps called method"""
+        self._redis.rpush(f'{method.__qualname__}:inputs', str(args))
+        output = method(self, *args)
+        self._redis.rpush(f'{method.__qualname__}:outputs', output)
+        return output
     return wrapper
 
 
@@ -61,7 +54,7 @@ class Cache:
     @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """store method"""
-        key = str(uuid4())
+        key = str(uuid.uuid4())
         self._radis.set(key, data)
         return key
 
