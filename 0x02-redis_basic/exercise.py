@@ -47,15 +47,15 @@ class Cache:
     """Cache class"""
     def __init__(self) -> None:
         """new object"""
-        self._radis = redis.Redis()
-        self._radis.flushdb()
+        self._redis = redis.Redis()
+        self._redis.flushdb()
 
     # @call_history
     # @count_calls
     def store(self, data: Union[str, bytes, int, float]) -> str:
         """store method"""
         key = str(uuid.uuid4())
-        self._radis.set(key, data)
+        self._redis.set(key, data)
         return key
 
     # def get(self, key: str, fn: Optional[Callable] = None) -> Any:
